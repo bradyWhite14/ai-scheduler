@@ -1,8 +1,17 @@
-import fs from 'fs';
-import path from 'path';
+import { supabase } from '@/lib/supabase';
 
 export async function GET() {
-  const filePath = path.join(process.cwd(), 'data', 'leads.json');
-  const leads = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-  return Response.json({ leads });
+  try {
+    const { data, error } = await supabase
+      .from('leads')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    return Response.json({ leads: data });
+  } catch (err) {
+    console.error('Failed to fetch leads:', err);
+    return Response.json({ leads: [] });
+  }
 }

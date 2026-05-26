@@ -1,13 +1,22 @@
 import OpenAI from 'openai';
-import fs from 'fs';
-import path from 'path';
+import { supabase } from '@/lib/supabase';
 
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const SYSTEM_PROMPT = `
+function buildSystemPrompt() {
+  const today = new Date();
+  const todayLong = today.toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+
+  return `
 You are an AI receptionist for Brady's Detail Shop, a local car detailing business.
+Today's date is ${todayLong}.
 
 Services and pricing:
 - Full Detail: $150 (interior + exterior, ~3 hours)
@@ -23,56 +32,63 @@ Your job:
 2. Collect the customer's name, phone number, and preferred appointment time when they want to book
 3. Once you have all three, confirm the request and let them know the shop will follow up
 
-When you have collected all three pieces of info, end your message with exactly this on its own line:
-LEAD_CAPTURED:{"name":"<name>","phone":"<phone>","time":"<time>"}
+IMPORTANT — resolving appointment times:
+Always convert relative dates to the actual calendar date before storing them.
+Today is ${todayLong}. Use this as the reference when the customer says things like:
+- "tomorrow" → calculate the actual date (e.g. "Tuesday, May 27, 2026")
+- "next Monday" → find the next Monday on the calendar
+- "this Friday" → find the upcoming Friday
+Store the resolved date in full form, e.g. "Tuesday, May 27, 2026 at 9:00 AM".
+
+When you have collected all three pieces of info (name, phone, appointment time), end your message with exactly this on its own line:
+LEAD_CAPTURED:{"name":"<name>","phone":"<phone>","time":"<resolved full date and time>"}
 
 Rules:
 - Keep responses short and friendly
 - Never make up services or prices not listed above
 - If you don't know something, direct them to call the shop
 - Do not handle payments or guarantees
-`;
+`.trim();
+}
 
 export async function POST(request) {
-  const { messages } = await request.json();
+  try {
+    const { messages } = await request.json();
 
-  const formatted = messages.map(msg => ({
-    role: msg.role === 'user' ? 'user' : 'assistant',
-    content: msg.text,
-  }));
+    const formatted = messages.map(msg => ({
+      role: msg.role === 'user' ? 'user' : 'assistant',
+      content: msg.text,
+    }));
 
-  const response = await client.chat.completions.create({
-    model: 'gpt-4o-mini',
-    messages: [
-      { role: 'system', content: SYSTEM_PROMPT },
-      ...formatted,
-    ],
-  });
+    const response = await client.chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [
+        { role: 'system', content: buildSystemPrompt() },
+        ...formatted,
+      ],
+    });
 
-  let reply = response.choices[0].message.content;
+    let reply = response.choices[0].message.content;
 
-  // Check if lead was captured
-  if (reply.includes('LEAD_CAPTURED:')) {
-    const parts = reply.split('LEAD_CAPTURED:');
-    reply = parts[0].trim();
+    if (reply.includes('LEAD_CAPTURED:')) {
+      const parts = reply.split('LEAD_CAPTURED:');
+      reply = parts[0].trim();
 
-    try {
-      const leadData = JSON.parse(parts[1].trim());
-      const lead = {
-        ...leadData,
-        timestamp: new Date().toISOString(),
-      };
-
-      const filePath = path.join(process.cwd(), 'data', 'leads.json');
-      const existing = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-      existing.push(lead);
-      fs.writeFileSync(filePath, JSON.stringify(existing, null, 2));
-
-      console.log('Lead saved:', lead);
-    } catch (err) {
-      console.error('Failed to save lead:', err);
+      try {
+        const leadData = JSON.parse(parts[1].trim());
+        await supabase.from('leads').insert([
+          { name: leadData.name, phone: leadData.phone, time: leadData.time },
+        ]);
+      } catch {
+        // Lead save failed — chat still continues normally
+      }
     }
-  }
 
-  return Response.json({ reply });
+    return Response.json({ reply });
+  } catch {
+    return Response.json(
+      { reply: 'Sorry, something went wrong on our end. Please call us at (555) 123-4567.' },
+      { status: 500 }
+    );
+  }
 }

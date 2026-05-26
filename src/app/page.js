@@ -1,41 +1,55 @@
 import ChatWidget from './components/ChatWidget';
+import BookNowButton from './components/BookNowButton';
+
+export const metadata = {
+  title: "Brady's Detail Shop — Lawrenceburg, KY",
+  description: "Professional car detailing done right. Interior, exterior, or the full treatment — book your appointment in minutes.",
+};
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-zinc-950 text-white">
 
       {/* Nav */}
-      <nav className="flex items-center justify-between px-8 py-5 border-b border-zinc-800">
+      <nav className="flex items-center justify-between px-6 sm:px-8 py-5 border-b border-zinc-800">
         <span className="text-lg font-bold tracking-tight">Brady's Detail Shop</span>
-        
-          <a href="tel:5551234567" className="text-sm text-zinc-400 hover:text-white transition">
+        <div className="flex items-center gap-4">
+          <a href="tel:5551234567" className="hidden sm:block text-sm text-zinc-400 hover:text-white transition">
             (555) 123-4567
           </a>
+          <BookNowButton variant="nav" />
+        </div>
       </nav>
 
       {/* Hero */}
-      <section className="px-8 py-24 max-w-4xl mx-auto">
+      <section className="px-6 sm:px-8 py-20 sm:py-24 max-w-4xl mx-auto">
         <p className="text-blue-500 text-sm font-semibold uppercase tracking-widest mb-4">
           Lawrenceburg, KY
         </p>
-        <h1 className="text-5xl font-bold leading-tight mb-6">
+        <h1 className="text-4xl sm:text-5xl font-bold leading-tight mb-4">
           Your car deserves<br />
           <span className="text-blue-500">a proper detail.</span>
         </h1>
-        <p className="text-zinc-400 text-lg max-w-xl mb-10">
+        <p className="text-zinc-500 text-base sm:text-lg font-medium italic mb-5">
+          We treat every car like it's our own.
+        </p>
+        <p className="text-zinc-400 text-base sm:text-lg max-w-xl mb-10">
           Professional car detailing done right. Interior, exterior, or the full treatment —
           chat with our assistant below to book your appointment in minutes.
         </p>
-        <a
-          href="#services"
-          className="inline-block bg-blue-600 hover:bg-blue-500 text-white font-semibold px-6 py-3 rounded-xl transition"
-        >
-          See Services
-        </a>
+        <div className="flex flex-wrap gap-3">
+          <a
+            href="#services"
+            className="inline-block bg-blue-600 hover:bg-blue-500 text-white font-semibold px-6 py-3 rounded-xl transition"
+          >
+            See Services
+          </a>
+          <BookNowButton variant="hero" />
+        </div>
       </section>
 
       {/* Services */}
-      <section id="services" className="px-8 py-20 bg-zinc-900 border-y border-zinc-800">
+      <section id="services" className="px-6 sm:px-8 py-20 bg-zinc-900 border-y border-zinc-800">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl font-bold mb-2">Services & Pricing</h2>
           <p className="text-zinc-400 mb-10">Every detail, every time.</p>
@@ -70,7 +84,7 @@ export default function Home() {
       </section>
 
       {/* Why Us */}
-      <section className="px-8 py-20 max-w-4xl mx-auto">
+      <section className="px-6 sm:px-8 py-20 max-w-4xl mx-auto">
         <h2 className="text-2xl font-bold mb-2">Why Brady's?</h2>
         <p className="text-zinc-400 mb-10">Local, reliable, and detail-obsessed.</p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
@@ -92,8 +106,46 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Testimonials */}
+      <section className="px-6 sm:px-8 py-20 bg-zinc-900 border-y border-zinc-800">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-2xl font-bold mb-2">What Customers Say</h2>
+          <p className="text-zinc-400 mb-10">Don't just take our word for it.</p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+
+            <div className="bg-zinc-800 border border-zinc-700 rounded-2xl p-6">
+              <p className="text-yellow-400 text-sm mb-3">★★★★★</p>
+              <p className="text-zinc-300 text-sm mb-5">
+                "Best detail I've ever had. My truck looks brand new — Brady did an incredible job on the interior."
+              </p>
+              <p className="font-semibold text-sm">Mike T.</p>
+              <p className="text-zinc-500 text-xs">Lawrenceburg, KY</p>
+            </div>
+
+            <div className="bg-zinc-800 border border-zinc-700 rounded-2xl p-6">
+              <p className="text-yellow-400 text-sm mb-3">★★★★★</p>
+              <p className="text-zinc-300 text-sm mb-5">
+                "Super easy to book, fast turnaround, and the car came back looking amazing. Will definitely be coming back."
+              </p>
+              <p className="font-semibold text-sm">Sarah M.</p>
+              <p className="text-zinc-500 text-xs">Frankfort, KY</p>
+            </div>
+
+            <div className="bg-zinc-800 border border-zinc-700 rounded-2xl p-6">
+              <p className="text-yellow-400 text-sm mb-3">★★★★★</p>
+              <p className="text-zinc-300 text-sm mb-5">
+                "Brady is professional, thorough, and fair priced. The full detail is absolutely worth every penny."
+              </p>
+              <p className="font-semibold text-sm">James R.</p>
+              <p className="text-zinc-500 text-xs">Versailles, KY</p>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
-      <footer className="border-t border-zinc-800 px-8 py-8 text-zinc-500 text-sm flex flex-col sm:flex-row justify-between gap-2">
+      <footer className="border-t border-zinc-800 px-6 sm:px-8 py-8 text-zinc-500 text-sm flex flex-col sm:flex-row justify-between gap-2">
         <p>© 2026 Brady's Detail Shop · Lawrenceburg, KY</p>
         <p>Mon–Sat 8am–6pm · (555) 123-4567</p>
       </footer>
