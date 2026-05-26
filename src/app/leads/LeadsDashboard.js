@@ -104,11 +104,11 @@ export default function LeadsDashboard() {
 
   const stats = useMemo(
     () => ({
-      total: filtered.length,
-      today: filtered.filter(l => new Date(l.created_at).toDateString() === todayStr).length,
-      pending: filtered.filter(l => l.status === 'pending').length,
+      total: leads.length,
+      today: leads.filter(l => new Date(l.created_at).toDateString() === todayStr).length,
+      pending: leads.filter(l => l.status === 'pending').length,
     }),
-    [filtered, todayStr]
+    [leads, todayStr]
   );
 
   if (!authed) {
@@ -202,6 +202,7 @@ export default function LeadsDashboard() {
                   <tr className="border-b border-gray-800 text-gray-400 text-xs uppercase tracking-wide">
                     <th className="text-left px-5 py-3">Name</th>
                     <th className="text-left px-5 py-3">Phone</th>
+                    <th className="text-left px-5 py-3">Service</th>
                     <th className="text-left px-5 py-3">Requested Time</th>
                     <th className="text-left px-5 py-3">Status</th>
                     <th className="text-left px-5 py-3">Captured</th>
@@ -216,6 +217,7 @@ export default function LeadsDashboard() {
                     >
                       <td className="px-5 py-4 font-medium">{lead.name}</td>
                       <td className="px-5 py-4 text-gray-300">{lead.phone}</td>
+                      <td className="px-5 py-4 text-gray-300">{lead.service || '—'}</td>
                       <td className="px-5 py-4 text-gray-300">{lead.time || '—'}</td>
                       <td className="px-5 py-4">
                         <span className={`text-xs font-semibold px-2 py-1 rounded-full ${STATUS_BADGE_CLASS[lead.status] ?? STATUS_BADGE_CLASS.pending}`}>
