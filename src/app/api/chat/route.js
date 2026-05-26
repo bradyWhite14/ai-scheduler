@@ -29,8 +29,8 @@ Phone: (555) 123-4567
 
 Your job:
 1. Answer questions about services, pricing, and hours
-2. Collect the customer's name, phone number, and preferred appointment time when they want to book
-3. Once you have all three, confirm the request and let them know the shop will follow up
+2. Collect the customer's name, phone number, preferred service, and preferred appointment time when they want to book
+3. Once you have all four, confirm the request
 
 IMPORTANT — resolving appointment times:
 Always convert relative dates to the actual calendar date before storing them.
@@ -41,7 +41,7 @@ Today is ${todayLong}. Use this as the reference when the customer says things l
 Store the resolved date in full form, e.g. "Tuesday, May 27, 2026 at 9:00 AM".
 
 When you have collected all three pieces of info (name, phone, appointment time), end your message with exactly this on its own line:
-LEAD_CAPTURED:{"name":"<name>","phone":"<phone>","time":"<resolved full date and time>"}
+LEAD_CAPTURED:{"name":"<name>","phone":"<phone>","service":"<service>","time":"<resolved full date and time>"}
 
 Rules:
 - Keep responses short and friendly
@@ -77,8 +77,8 @@ export async function POST(request) {
       try {
         const leadData = JSON.parse(parts[1].trim());
         await supabase.from('leads').insert([
-          { name: leadData.name, phone: leadData.phone, time: leadData.time },
-        ]);
+  { name: leadData.name, phone: leadData.phone, service: leadData.service, time: leadData.time },
+]);
       } catch {
         // Lead save failed — chat still continues normally
       }
